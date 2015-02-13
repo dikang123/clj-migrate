@@ -11,6 +11,7 @@ Based on ideas from https://github.com/bayan/kapooya. Theirs is tied to postgres
 but we use mysql in our own special way.
 
 Entry points:
+
 1. migrate - run the database migrations
 2. create  - create a skeleton clj migration file - timestamps are hard ;)
 
