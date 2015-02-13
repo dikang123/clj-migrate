@@ -1,4 +1,4 @@
-(defproject com.soundcloud/clj-migrate "0.1.0"
+(defproject com.soundcloud/clj-migrate "0.1.1"
 
   :description "SoundCloud's database migration framework that uses clj files as migrations."
   :url         "https://github.com/soundcloud/clj-migrate"
@@ -16,5 +16,7 @@
   :main ^:skip-aot clj-migrate.core
 
   :min-lein-version "2.4.3"
+
+  :plugins [[lein-deploy-uberjar "2.0.0"]]
 
   :profiles {:uberjar {:aot :all}})

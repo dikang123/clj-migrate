@@ -28,8 +28,6 @@ the migrations-dir. We still need to decide if we ever want to rollback a
 single migration during automated deployment via a build pipeline. Our
 current approach is to roll-forward with a new migration.
 
-## Installation
-
 ## Usage
 
     $ java -jar clj-migrate-0.1.0-standalone.jar [options] action [create migration name]
