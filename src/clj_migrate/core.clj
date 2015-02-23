@@ -145,7 +145,8 @@
   (->> [""
         "SoundCloud's database migration framework that uses clj files as migrations."
         ""
-        "Usage: java clj_migrate.core [options] action [create migration name]"
+        "Usage: lein run [options] action [create migration name]"
+        "   Or: java -jar clj-migrate-standalone.jar [options] action [create migration name]"
         ""
         "Options:"
         options-summary

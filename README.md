@@ -30,7 +30,8 @@ current approach is to roll-forward with a new migration.
 
 ## Usage
 
-    $ java -jar clj-migrate-0.1.0-standalone.jar [options] action [create migration name]
+    Usage: lein run [options] action [create migration name]
+       Or: java -jar clj-migrate-standalone.jar [options] action [create migration name]
 
     Options:
       -j, --url JDBC_URL                   Database connection URL
