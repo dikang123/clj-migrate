@@ -1,4 +1,4 @@
-(defproject com.soundcloud/clj-migrate "1.0.1"
+(defproject com.soundcloud/clj-migrate "1.0.2-SNAPSHOT"
 
   :description "SoundCloud's database migration framework that uses clj files as migrations."
   :url         "https://github.com/soundcloud/clj-migrate"
