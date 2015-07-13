@@ -41,8 +41,7 @@
 
 (def migration-dir-name "migrations")
 
-(defn url-encode [value]
-  (URLEncoder/encode value "UTF-8"))
+(defn url-encode [value] (URLEncoder/encode value "UTF-8"))
 
 (defn encode-database-url [jdbc-url username password]
   (str jdbc-url "?user=" (url-encode username) "&password=" (url-encode password)))
@@ -60,8 +59,10 @@
     (if (down? direction) (reverse files) files)))
 
 (defn filepath-to-name-space-string [path]
-  (let [ns-str (-> (StringUtils/substringAfter path "/") (string/replace ".clj" "") (string/replace "/" ".") (string/replace "_" "-"))]
-    (if (Character/isDigit (get ns-str 0)) (str "migration-" ns-str) ns-str)))
+  (-> (StringUtils/substringAfter path "/")
+      (string/replace ".clj" "")
+      (string/replace "/" ".")
+      (string/replace "_" "-")))
 
 (defn migration-id [path]
   (-> (FilenameUtils/getBaseName path) (string/replace "_" "-")))
@@ -92,7 +93,8 @@
 
 (defn check-migrations-table [db migration-table]
   (println "Checking that" migration-table "table exists")
-  (sql/db-do-commands db (str "CREATE TABLE IF NOT EXISTS " migration-table " (id varchar(255) DEFAULT NULL, created_at varchar(32) DEFAULT NULL)")))
+  (sql/db-do-commands db (str "CREATE TABLE IF NOT EXISTS " migration-table
+                              " (id varchar(255) DEFAULT NULL, created_at varchar(32) DEFAULT NULL)")))
 
 (defn check-database-exists [database-name db]
   (println "Checking that" database-name "database exists")
@@ -102,21 +104,21 @@
   "Run the database migration clj files in the migrations-dir using the
    provided database configuration and direction (:up or :down)."
   ([cfg]
-    (migrate cfg migration-dir-name))
+   (migrate cfg migration-dir-name))
   ([cfg migrations-dir]
-    (migrate cfg migrations-dir :up))
+   (migrate cfg migrations-dir :up))
   ([cfg migrations-dir direction]
-    (let [jdbc-url (:url cfg)
-          username (:username cfg)
-          password (:password cfg)
-          migration-table (get cfg :table migration-table-name)
-          database-name (StringUtils/substringAfterLast jdbc-url "/")
-          update-db (dbspec (encode-database-url jdbc-url username password))
-          create-db (dbspec (encode-database-url (StringUtils/substringBeforeLast jdbc-url "/") username password))]
-      (check-database-exists database-name create-db)
-      (check-migrations-table update-db migration-table)
-      (run-migrations update-db migrations-dir migration-table direction)
-      (println "Done"))))
+   (let [jdbc-url (:url cfg)
+         username (:username cfg)
+         password (:password cfg)
+         migration-table (get cfg :table migration-table-name)
+         database-name (StringUtils/substringAfterLast jdbc-url "/")
+         update-db (dbspec (encode-database-url jdbc-url username password))
+         create-db (dbspec (encode-database-url (StringUtils/substringBeforeLast jdbc-url "/") username password))]
+     (check-database-exists database-name create-db)
+     (check-migrations-table update-db migration-table)
+     (run-migrations update-db migrations-dir migration-table direction)
+     (println "Done"))))
 
 (defn create-contents [ns-str]
   (str "(ns " ns-str "\n"
@@ -129,7 +131,7 @@
    but then you'd have to create the full timestamped file name and namespace."
   [migrations-dir name]
   (let [filename (string/lower-case (string/replace name #"[\s-]+" "_"))
-        path (io/file migrations-dir (str (fmt/unparse filename-formatter (time/now)) "_" filename ".clj"))
+        path (io/file migrations-dir (str "m" (fmt/unparse filename-formatter (time/now)) "_" filename ".clj"))
         ns-str (filepath-to-name-space-string (str path))]
     (FileUtils/write path (create-contents ns-str) "UTF-8")
     (println "Created" (str path))))
