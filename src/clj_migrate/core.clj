@@ -30,7 +30,7 @@
     (org.apache.commons.io FilenameUtils FileUtils))
   (:require
     [clojure.java.io :as io]
-    [clojure.tools.cli :refer [parse-opts]]
+    [clojure.tools.cli :as cli]
     [clojure.string :as string]
     [clojure.java.jdbc :as sql]
     [clj-time.format :as fmt]
@@ -58,18 +58,12 @@
   (let [files (->> (io/file migrations-dir) .listFiles (map str) sort (filter #(.endsWith % ".clj")))]
     (if (down? direction) (reverse files) files)))
 
-(defn filepath-to-name-space-string [path]
-  (-> (StringUtils/substringAfter path "/")
-      (string/replace ".clj" "")
-      (string/replace "/" ".")
-      (string/replace "_" "-")))
-
 (defn migration-id [path]
   (-> (FilenameUtils/getBaseName path) (string/replace "_" "-")))
 
 (defn run-migration-function [path direction db]
   (load-file path)
-  (let [fn-name (str (filepath-to-name-space-string path) "/" (name direction))
+  (let [fn-name (str (migration-id path) "/" (name direction))
         fn-var (resolve (symbol fn-name))]
     (println "Running" fn-name)
     (apply fn-var [db])))
@@ -120,7 +114,7 @@
      (run-migrations update-db migrations-dir migration-table direction)
      (println "Done"))))
 
-(defn create-contents [ns-str]
+(defn ^String create-contents [ns-str]
   (str "(ns " ns-str "\n"
        "  (:require [clojure.java.jdbc :as j]))\n\n"
        "(defn up [db])\n\n"
@@ -132,7 +126,7 @@
   [migrations-dir name]
   (let [filename (string/lower-case (string/replace name #"[\s-]+" "_"))
         path (io/file migrations-dir (str "m" (fmt/unparse filename-formatter (time/now)) "_" filename ".clj"))
-        ns-str (filepath-to-name-space-string (str path))]
+        ns-str (migration-id (str path))]
     (FileUtils/write path (create-contents ns-str) "UTF-8")
     (println "Created" (str path))))
 
@@ -169,7 +163,7 @@
   (System/exit status))
 
 (defn -main [& args]
-  (let [{:keys [options arguments errors summary]} (parse-opts args cli-options)]
+  (let [{:keys [options arguments errors summary]} (cli/parse-opts args cli-options)]
     (cond
       (:help options) (exit 0 (usage summary))
       (not (> (count arguments) 0)) (exit 1 (usage summary))
