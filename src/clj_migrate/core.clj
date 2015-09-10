@@ -133,7 +133,7 @@
 (def cli-options [["-j" "--url JDBC_URL" "Database connection URL"]
                   ["-u" "--username USERNAME" "Database connection username"]
                   ["-p" "--password PASSWORD" "Database connection password"]
-                  ["-d" "--dir DIRECTORY" "Directory on classpath with clj migrations" :default migration-dir-name]
+                  ["-d" "--dir DIRECTORY" "Directory with clj migrations" :default migration-dir-name]
                   ["-t" "--table NAME" "Migration table name" :default migration-table-name]
                   ["-h" "--help"]])
 
